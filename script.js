@@ -2,16 +2,7 @@ function getApiBase() {
   const url = new URL(window.location.href);
   const apiFromQuery = url.searchParams.get("api");
   if (apiFromQuery) return apiFromQuery.replace(/\/+$/, "");
-
-  const fallback = "https://coba-code.vercel.app";
-
-  if (url.protocol !== "http:" && url.protocol !== "https:") return fallback;
-
-  const host = url.hostname.toLowerCase();
-  if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") return fallback;
-  if (host.endsWith(".github.io")) return fallback;
-
-  return url.origin.replace(/\/+$/, "");
+  return "https://coba-code.vercel.app";
 }
 
 const API_BASE = getApiBase();
