@@ -2,11 +2,12 @@ function getApiBase() {
   const url = new URL(window.location.href);
   const apiFromQuery = url.searchParams.get("api");
   if (apiFromQuery) return apiFromQuery.replace(/\/+$/, "");
-  return "https://coba-code.vercel.app";
+  
+  // Langsung mengambil URL website tempat file ini berada sekarang
+  return window.location.origin;
 }
 
 const API_BASE = getApiBase();
-const API_BASE_API = API_BASE.endsWith("/api") ? API_BASE : `${API_BASE}/api`;
 
 const btnHelloWorld = document.getElementById("btnHelloWorld");
 const helloForm = document.getElementById("helloForm");
@@ -24,31 +25,26 @@ function setBusy(isBusy) {
 }
 
 async function fetchJson(path, options) {
-  const attempt = async (base) => {
-    const res = await fetch(`${base}${path}`, options);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, options);
     const contentType = res.headers.get("content-type") || "";
     const body = contentType.includes("application/json") ? await res.json() : await res.text();
-    return { res, body };
-  };
-
-  const first = await attempt(API_BASE);
-  if (first.res.ok) return first.body;
-
-  if (first.res.status === 404 || first.res.status === 405) {
-    const second = await attempt(API_BASE_API);
-    if (second.res.ok) return second.body;
-    const detail = typeof second.body === "string" ? second.body : JSON.stringify(second.body);
-    throw new Error(`HTTP ${second.res.status}: ${detail}`);
+    
+    if (!res.ok) {
+      const detail = typeof body === "string" ? body : JSON.stringify(body);
+      throw new Error(`HTTP ${res.status}: ${detail}`);
+    }
+    return body;
+  } catch (err) {
+    throw err;
   }
-
-  const detail = typeof first.body === "string" ? first.body : JSON.stringify(first.body);
-  throw new Error(`HTTP ${first.res.status}: ${detail}`);
 }
 
 btnHelloWorld.addEventListener("click", async () => {
   setBusy(true);
   try {
-    const data = await fetchJson("/", { method: "GET" });
+    // Memanggil rute /api milik backend
+    const data = await fetchJson("/api", { method: "GET" });
     setResult(data?.status ?? JSON.stringify(data));
   } catch (err) {
     setResult(`Error: ${err?.message || String(err)}`);
@@ -68,7 +64,8 @@ helloForm.addEventListener("submit", async (e) => {
 
   setBusy(true);
   try {
-    const data = await fetchJson("/hello", {
+    // Memanggil rute /api/hello milik backend
+    const data = await fetchJson("/api/hello", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ name }),
