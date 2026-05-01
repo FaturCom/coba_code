@@ -4,7 +4,9 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-origins = ["*"]
+origins = [
+    "*", # Mengizinkan semua frontend (karena sekarang dihosting bersama)
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,14 +18,15 @@ app.add_middleware(
 class Item(BaseModel):
     name: str
 
-@app.get("/")
+# Ubah rute ini dengan menambahkan /api
+@app.get("/api")
 def read_root():
     return {
         "status": "Hello world",
     }
 
-    
-@app.post("/hello")
+# Ubah rute ini dengan menambahkan /api
+@app.post("/api/hello")
 def say_Hello(item: Item):
     return{
         "status": f"Hello, {item.name}!"
