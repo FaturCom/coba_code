@@ -9,6 +9,7 @@ function getApiBase() {
 
   const host = url.hostname.toLowerCase();
   if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") return fallback;
+  if (host.endsWith(".github.io")) return fallback;
 
   return url.origin.replace(/\/+$/, "");
 }
