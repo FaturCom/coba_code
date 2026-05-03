@@ -19,7 +19,7 @@ class Item(BaseModel):
     name: str
 
 # Ubah rute ini dengan menambahkan /api
-@app.get("/api")
+@app.get("/")
 def read_root():
     return {
         "status": "Hello world",
